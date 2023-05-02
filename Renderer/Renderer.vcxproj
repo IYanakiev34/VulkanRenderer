@@ -15,10 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4DE5FF47-39B3-F34D-2247-64740EB4CFB2}</ProjectGuid>
+    <ProjectGuid>{7CCE658F-689B-C09A-91B4-AE427DE0F528}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>VulkanRenderer</RootNamespace>
+    <RootNamespace>Renderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -57,21 +57,21 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\DEBUG-windows-x86_64\{%prj.name}\</OutDir>
     <IntDir>..\bin-int\DEBUG-windows-x86_64\{%prj.name}\</IntDir>
-    <TargetName>VulkanRenderer</TargetName>
+    <TargetName>Renderer</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RELEASE|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\RELEASE-windows-x86_64\{%prj.name}\</OutDir>
     <IntDir>..\bin-int\RELEASE-windows-x86_64\{%prj.name}\</IntDir>
-    <TargetName>VulkanRenderer</TargetName>
+    <TargetName>Renderer</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DIST|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\DIST-windows-x86_64\{%prj.name}\</OutDir>
     <IntDir>..\bin-int\DIST-windows-x86_64\{%prj.name}\</IntDir>
-    <TargetName>VulkanRenderer</TargetName>
+    <TargetName>Renderer</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DEBUG|x64'">
@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;VKR_WINDOWS_PLATFORM;VKR_ENABLE_ASSERTS;VKR_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;VulkanRenderer\vendor\glm;VulkanRenderer\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;..\vendor\glm;..\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -89,7 +89,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;C:\VulkanSDK\1.3.243.0\Lib\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RELEASE|x64'">
@@ -97,7 +97,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;VKR_WINDOWS_PLATFORM;VKR_ENABLE_ASSERTS;VKR_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;VulkanRenderer\vendor\glm;VulkanRenderer\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;..\vendor\glm;..\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -111,7 +111,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;C:\VulkanSDK\1.3.243.0\Lib\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DIST|x64'">
@@ -119,7 +119,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;VKR_WINDOWS_PLATFORM;VKR_ENABLE_ASSERTS;VKR_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;VulkanRenderer\vendor\glm;VulkanRenderer\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;C:\VulkanSDK\1.3.243.0\Include;..\vendor\glm;..\vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -133,7 +133,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;C:\VulkanSDK\1.3.243.0\Lib\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

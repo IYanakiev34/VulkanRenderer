@@ -1,6 +1,7 @@
 workspace "VulkanRenderer"
 	architecture "x64"
-
+	targetdir "build"
+	startproject "Renderer"
 	configurations
 	{
 		"DEBUG",
@@ -8,7 +9,6 @@ workspace "VulkanRenderer"
 		"DIST"
 	}
 
-	startproject "VulkanRenderer"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -16,14 +16,16 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 Library = {}
 Library["VULKAN"] = "%{VULKAN_SDK}/Lib"
-
+Library["VULKAN_lib"] = "%{VULKAN_SDK}/Lib/vulkan-1.lib"
+Library["VULKAN_utils"] = "%{VULKAN_SDK}/Lib/VkLayer_utils.lib"
 Include = {}
 Include["VULKAN"] = "%{VULKAN_SDK}/Include"
 
 include "vendor/GLFW"
 
-project "VulkanRenderer"
-	location "VulkanRenderer"
+
+project "Renderer"
+	location "Renderer"
 	kind "ConsoleApp"
 	staticruntime "off"
 	language "C++"
@@ -38,24 +40,26 @@ project "VulkanRenderer"
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/src/**.inl",
-		"%{wks.name}/vendor/glm/glm/**.hpp",
-		"%{wks.name}/vendor/glm/glm/**.inl",
-		"%{wks.name}/vendor/glm/glm/**.cpp",
-		"%{wks.name}/vendor/glm/glm/**.h",
+		"%{wks.name}/Renderer/vendor/glm/glm/**.hpp",
+		"%{wks.name}/Renderer/vendor/glm/glm/**.inl",
+		"%{wks.name}/Renderer/vendor/glm/glm/**.cpp",
+		"%{wks.name}/Renderer/vendor/glm/glm/**.h",
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
 		"%{Include.VULKAN}",
-		"%{wks.name}/vendor/glm",
-		"%{wks.name}/vendor/GLFW/include"
+		"vendor/glm",
+		"vendor/GLFW/include",
 	}
 
 	links
 	{
 		"GLFW",
-		"opengl32.lib"
+		"opengl32.lib",
+		"%{Library.VULKAN_lib}",
+		"%{Library.VULKAN_utils}"
 	}
 
 	defines{
@@ -75,20 +79,12 @@ project "VulkanRenderer"
 		runtime "Debug"
 		symbols "on"
 
-		links
-		{
-
-		}
 
 	filter "configurations:RELEASE"
 		defines "VKR_RELEASE"
 		runtime "Release"
 		optimize "on"
 
-		links
-		{
-
-		}
 
 	filter "configurations:DIST"
 		defines "VKR_DIST"
