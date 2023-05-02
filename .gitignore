@@ -1,0 +1,8 @@
+# Directories
+.vs/
+bin/
+bin-int/
+Renderer/assets/**
+
+# Files
+*.user
