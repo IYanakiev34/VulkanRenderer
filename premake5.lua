@@ -20,6 +20,8 @@ Library["VULKAN"] = "%{VULKAN_SDK}/Lib"
 Include = {}
 Include["VULKAN"] = "%{VULKAN_SDK}/Include"
 
+include "vendor/GLFW"
+
 project "VulkanRenderer"
 	location "VulkanRenderer"
 	kind "ConsoleApp"
@@ -36,12 +38,24 @@ project "VulkanRenderer"
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/src/**.inl",
+		"%{wks.name}/vendor/glm/glm/**.hpp",
+		"%{wks.name}/vendor/glm/glm/**.inl",
+		"%{wks.name}/vendor/glm/glm/**.cpp",
+		"%{wks.name}/vendor/glm/glm/**.h",
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{Include.VULKAN}"
+		"%{Include.VULKAN}",
+		"%{wks.name}/vendor/glm",
+		"%{wks.name}/vendor/GLFW/include"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	defines{
