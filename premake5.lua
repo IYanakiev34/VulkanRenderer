@@ -37,27 +37,18 @@ project "Renderer"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.c",
 		"%{prj.name}/src/**.inl",
-		"%{wks.name}/Renderer/vendor/glm/glm/**.hpp",
-		"%{wks.name}/Renderer/vendor/glm/glm/**.inl",
-		"%{wks.name}/Renderer/vendor/glm/glm/**.cpp",
-		"%{wks.name}/Renderer/vendor/glm/glm/**.h",
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
 		"%{Include.VULKAN}",
-		"vendor/glm",
-		"vendor/GLFW/include",
 	}
 
 	links
 	{
-		"GLFW",
-		"opengl32.lib",
 		"%{Library.VULKAN_lib}",
 		"%{Library.VULKAN_utils}"
 	}
