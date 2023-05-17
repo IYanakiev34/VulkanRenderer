@@ -128,8 +128,16 @@ and finally run the application with the game. But what is a game? What is appli
 does a game provide.
 
 1. Application - We need to configuration for now: width, height, start_x, start_y, name, platform_state
-2. Game - game_state (void *), function pointers for, creation, rendering, updating, window resizing
+2. Game - game_state (void *), function pointers for, creation, rendering, updating, window resizing, application config
 
+How does everything flow? Let's see what the user needs to do know. He needs to fill out the application config struct
+of his game, which is basically, width, height, name etc. He then needs to provide the function pointers for his game's
+render, initialize, update, and resize. This is it. Then the game will use this function to create the game according
+to the user specifications. It will then create an application with this game, and run the application. The application
+run method will poll and handle events from the window. It will also update and render the game using the function
+pointers provided by the user. The reason that we leave the engine to handle the game is the following. The engine
+can be responsible for logging and handling errors of reporting failures to the user. We do not want the user
+to need to handle these things.
 
 
 I will again place design graphs. These will be a little higher level control flow graphs that expose the
