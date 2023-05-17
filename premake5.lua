@@ -1,7 +1,7 @@
 workspace "VulkanRenderer"
 	architecture "x64"
 	targetdir "build"
-	startproject "Renderer"
+	startproject "Testbed"
 	configurations
 	{
 		"DEBUG",
@@ -21,18 +21,21 @@ Library["VULKAN_utils"] = "%{VULKAN_SDK}/Lib/VkLayer_utils.lib"
 Include = {}
 Include["VULKAN"] = "%{VULKAN_SDK}/Include"
 
-include "vendor/GLFW"
-
 
 project "Renderer"
 	location "Renderer"
-	kind "ConsoleApp"
+	kind "SharedLib"
 	staticruntime "off"
-	language "C++"
-	cppdialect "C++17"
+	language "C"
+	cdialect "C11"
 
-	targetdir ("bin/" .. outputdir .. "/{%prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/{%prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	postbuildcommands 
+{
+	("{COPY} %{cfg.buildtarget.directory}/%{prj.name}.dll ../bin/" .. outputdir .. "/Testbed/")
+}
 
 	files
 	{
@@ -54,7 +57,8 @@ project "Renderer"
 	}
 
 	defines{
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"VNEXPORT" -- Used to build the DLL
 	}
 
 	filter "system:windows"
@@ -68,19 +72,119 @@ project "Renderer"
 	filter "configurations:DEBUG"
 		defines "VKR_DEBUG"
 		runtime "Debug"
-		symbols "on"
+		symbols "On"
 
 
 	filter "configurations:RELEASE"
 		defines "VKR_RELEASE"
 		runtime "Release"
-		optimize "on"
+		optimize "On"
 
 
 	filter "configurations:DIST"
 		defines "VKR_DIST"
 		runtime "Release"
-		optimize "on"
+		optimize "Full"
 
+
+project "Editor"
+	location "Editor"
+	kind "ConsoleApp"
+	language "C"
+	cdialect "C11"
+	staticruntime "off"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.c",
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.inl"
+	}
+
+	includedirs
+	{
+		"%{prj.name}/src",
+	}
+
+	dependson
+	{
+		"Renderer"
+	}
+
+	links
+	{
+		"Renderer"
+	}
+
+	filter "configurations:DEBUG"
+		defines "ED_DEBUG"
+		runtime "Debug"
+		symbols "On"
+
+
+	filter "configurations:RELEASE"
+		defines "ED_RELEASE"
+		runtime "Release"
+		optimize "On"
+
+
+	filter "configurations:DIST"
+		defines "ED_DIST"
+		runtime "Release"
+		optimize "Full"
+
+
+project "Testbed"
+	location "Testbed"
+	kind "ConsoleApp"
+	language "C"
+	cdialect "C11"
+	staticruntime "off"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.c",
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.inl"
+	}
+
+	includedirs
+	{
+		"%{wks.location}/Renderer/src",
+		"%{prj.name}/src"
+	}
+
+	dependson
+	{
+		"Renderer"
+	}
+
+	links
+	{
+		"Renderer"
+	}
+
+	filter "configurations:DEBUG"
+		defines "TB_DEBUG"
+		runtime "Debug"
+		symbols "On"
+
+
+	filter "configurations:RELEASE"
+		defines "TB_RELEASE"
+		runtime "Release"
+		optimize "On"
+
+
+	filter "configurations:DIST"
+		defines "TB_DIST"
+		runtime "Release"
+		optimize "Full"
 
 

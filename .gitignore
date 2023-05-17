@@ -2,7 +2,6 @@
 .vs/
 bin/
 bin-int/
-Renderer/assets/**
-
+Testbed/assets/**
 # Files
 *.user
