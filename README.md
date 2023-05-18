@@ -148,3 +148,101 @@ how they flow throughout the code.
 ![Entry code control flow](Diagrams/entry_flow.png)
 
 ![Engine key data structures at this point](Diagrams/engine_structs.png)
+
+## Engine Part 4
+In this part we will design the basic memory allocation structure and tagging system. We will also go and design
+the event system. Why do we need custom memory system in the first place? Well first of all it will be more efficient
+to have a custom memory system since we might want to create a big block of memory and use it inside the engine rather
+than many small allocations. Second we can create custom memory routines.
+
+### Memory system
+For now the most important part will be to be able to track the memory usage throughout the engine. Whenever we allocate
+memory we want to classify it into an enum type. Later we can use the memory statistic to output how much memory the system
+uses for different things. This can be helpful to both the engine programmer and the player that creates his game. The allocation,
+free, etc is quite easy. We just tag a block add its size to the memory_stats struct and proceeed to allocate the block
+with our predefined platform layer allocation. This will be the case for all of the functions. Since memory allocation
+si very important and one of the lower level sub-systems we will intialize it before anything in the entry.h file. This
+will most likely be the only system that will get initialized then. 
+#### Logging trouble
+Since we create the logger in create_application function, right now we might miss some logs at system level. However, this
+is fine. If we really need to see what is happenign we can move the log to entry and initialize it after memory.
+
+
+### Event system
+Why do we need events? If you look at any popular game engine like Unreal or Unity (I specifically like Unreal even system), they
+have event systems. Event provide us a useful mechanism to communicate between object and react to events, rather than perform
+busy waiting. The basics of event system are the following. We need event types, the even structure itself and we need an efficient
+callback mechanism. Where we can assign a callback in case an event of some type fires. This system will be used in various level
+of the engine so we have to make sure it is robust. For example we can use it to process user input on window level, like resizing,
+keyboard etc. We can also use it at later stage for the ECS components. I will provide a graph of the basic idea behind the event system.
+Currently the event will be ran instantaniously, in the future they will be queue for processing later and probably run on a separate
+thread.
+
+![Event system idea](fhdhfh.png)
+
+#### Event system data structures
+One question is first of all what is na event? Who sends events? How listens to events? How to add callbacks?
+Well first an event is some context, some data that is being sent from one place to another. Data is typically
+small, thus the event being lightwieght. We do not want to store huge amount of data, rather just notify that
+something happened and store the crucial information. For that we will use a union of data. The union can store
+128 bytes of various formats. Thats it for the `event context` itself. Next is the callback. Well let's treat
+a callback like an interface function that the `listener` should implement. What should this function be?
+We need:
+
+1. The code of the event (some sort of enum)
+2. The event context (data of the event)
+3. The sender (void *)
+4. The listener (void *)
+
+We can now define a typedef like:
+```C
+ typedef b8 (*PFN_on_event)(u16 code, void *sender, void *listener_inst, event_context data);
+```
+Okay but how to efficiently store these events and codes. For the codes we define the following convention.
+One enum for engine codes (from 0 to 255) and one for user code (256  to whatever). Okay then each code
+will be commented with it's use (how to use the data in the data context and where it will be stored).
+Okay now how to store all the events with all the listeners and callbacks.
+
+```C
+	struct registered_event{
+		void *listener;
+		PFN_on_event cb;
+	}
+
+	struct event_code_entry{
+	registered_event *events;
+	}
+
+	struct event_system_state{
+		event_code_entry entries[MAX_CODES];
+	};
+```
+ With this structure we can easily store array of event codes along with their
+ listeners and callback functions. Now we need an interface for the event system.
+ We need to be able to do the following things:
+
+ 1. initialize the system - allocate memory for the system state
+ 2. shutdown the system - deallocate the system state
+ 3. register listener for a specific event code with a callback function
+ 4. deregister listener from a specific event
+ 5. fire an event to all the listeners of it.
+
+### Containers
+We will need to use a lot dynamic arrays. In C it is not easy to create something like vector but we will try.
+Of course it will not be type-checked like in C++, and it will use macro magic. How to do it.
+Well since the data inside the block of memory is of unknow type we need a `void *` to a block of memory.
+In order to insert into it we need to know to size of the elements or namely the `stride`. I will not explain
+in detail here but rather provide diagrams. The basic idea is the following. Allocate a block of memory
+and store the information about the array as a header in the first 192 bits `3 integers of size u64 stride,length,capacity`.
+The rest of the space is the actual array. We will hide the header from the user and only pass to him the actual
+array space without the header so basically `((void *)(array + 3 * sizeof(u64)))`. We will cerate functions
+to interact with the array that will be `hidden` i say hidden since yes they will be exported but the user should
+not interact with them, rather with macros we have defined. Then for each function we define a public macro
+that will access the function and perform potentially more things to format and fix the passed data.
+Whenever we insert, resize, or pop we will fix the header information of the array. This will be done
+by offsetting the start of the array by minus `3 * sizeof(u64)`. This information ios crucial
+since when we want to deallocate the array we need actually know the capacity and stride of the array.
+Otherwise we will leak memory.
+
+TODO: provide graphs on array
+

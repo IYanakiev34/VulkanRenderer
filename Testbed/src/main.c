@@ -1,4 +1,5 @@
 #include <entry.h>
+#include <core/vmemory.h>
 #include "game.h"
 
 b8 create_game(game* game_out) {
@@ -24,7 +25,7 @@ b8 create_game(game* game_out) {
     
     // Assign game state
     {
-        game_out->state = malloc(sizeof(game_state)); // for now use malloc TODO: fix it
+        game_out->state = vallocate(sizeof(game_state),MEMORY_TAG_GAME);
     }
 
     return TRUE;
