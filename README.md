@@ -144,3 +144,7 @@ I will again place design graphs. These will be a little higher level control fl
 control flow from the start to the end of the application. This will show which part is user code, and which
 is delegated to the engine. I will also try to provide basic graphs of the design of the data structures and
 how they flow throughout the code.
+
+![Entry code control flow](Diagrams/entry_flow.png)
+
+![Engine key data structures at this point](Diagrams/engine_structs.png)
