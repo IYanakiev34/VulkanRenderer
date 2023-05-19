@@ -246,3 +246,48 @@ Otherwise we will leak memory.
 
 TODO: provide graphs on array
 
+
+## Engine Part 5
+In this part I will focus on handling input. Right now we cannot do much but only spawn a window. We need
+to handle the input coming from the keyboard, mouse, and the window events. Then react accordingly. For
+the input we will simply deinfe enums for mouse buttons and key buttons. These will be taken from the
+`MSDN` docs and we will translate them on other platforms that are not windows. The we will need
+to somehow store and process input. Input will be concidered sub-system and as with every sub-system
+we need to initialize and shutdown it. What will the input system state be?
+
+1. We need current keys state
+2. We need current mouse state (buttons + corrdinates)
+3. We need previous frame keys state just in case
+4. We need previous frame mouse state just in case
+
+For the handling we will simply provide few methods that will update the state and
+also query the state. The state update is very simple you pass a value (button / key)
+and if it was pressed or not this will update the current state. For querying we simply
+return is the key was up or down dependeing on the function. We will also update the input
+state each frame via an update function. This function will simply copy the current keyboard
+and mouse state into the previous one. 
+
+What should we do when a key / button is pressed / released or the mouse moved? Well this is
+why we have the event system. We will simply fire an event with the information (like key code value)
+and notify any listeners about the state change. This is how the two systems work together.
+
+Finally, we will need to integrate this system with the application. Meaning initalize it, shut it down,
+and update it in the game frame. This finalizes the system itself.
+
+We also need to integrate it with the platform layer. This is the place we will collect information
+from window events, and update potentially the input state and also file evens, for example when window
+closes or something like that.
+
+## Engine Part 6
+I will now cover the very very very basic and high level design of the renderer system itself.
+This system will be extremely big and will cover many many parts. The main idea is to think about
+the renderer (generally any big dynamic system like that)
+
+1. We need to have a front-end inteface to interact with it
+2. Backend implementation - Vulkan / OpenGL / DirectX
+
+This design will allow us to easily substitue the backend later on if we need to and create a nice abstraction.
+This pattern could potentially be used for many different systems, this could event be used for plugins and stuff
+like this. Having this out of the way I will not outline what are some requirments for the renderer itself, what should
+the renderer be capable to do?
+
