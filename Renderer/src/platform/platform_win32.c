@@ -213,7 +213,7 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
     case WM_KEYUP:
     case WM_SYSKEYUP: {
         b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-        b8 relaesed = (msg == WM_KEYUP || msg == WM_SYSKEYUP);
+        b8 released = (msg == WM_KEYUP || msg == WM_SYSKEYUP);
         // TODO: input processing here
     } break;
     case WM_MOUSEMOVE: {

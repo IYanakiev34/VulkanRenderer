@@ -1,10 +1,14 @@
-#include "logger.h"
-#include "game_types.h"
-
 #include "application.h"
+
+// Systems
+#include "logger.h"
+#include "vmemory.h"
+#include "event.h"
+#include "input.h"
+
+// Miscelanious
+#include "game_types.h"
 #include "platform/platform.h"
-#include "core/vmemory.h"
-#include "core/event.h"
 
 
 typedef struct application_state {
@@ -30,6 +34,7 @@ b8 application_create(game* game_inst) {
 
     // Intialize subsystems
     intialize_logging();
+    input_initialize();
 
     // TEST logging
     // TODO: remove it later
@@ -105,12 +110,17 @@ b8 application_run() {
                 app_state.is_running = FALSE;
                 break;
             }
+            
+            // TODO: Input update / state. last frame before frame ends.
+            input_update((f64)0);
         }
     }
 
     app_state.is_running = FALSE;
 
     event_shutdown();
+    input_shutdown();
+    shutdown_logging();
     platform_shutdown(&app_state.platform);
 
     return TRUE;

@@ -26,9 +26,9 @@ static b8 initialized = FALSE;
 static event_system_state state;
 
 b8 event_initialize() {
-    if (initialized == TRUE)
+    if (initialized)
     {
-        VFATAL("Event system is already initialized");
+        VERROR("Event system is already initialized");
         return FALSE;
     }
 
@@ -48,7 +48,7 @@ void event_shutdown() {
 }
 
 b8 event_register(u16 code, void* listener_inst, PFN_on_event on_event_cb) {
-    if (initialized == FALSE) {
+    if (!initialized) {
         return FALSE;
     }
 
@@ -74,7 +74,7 @@ b8 event_register(u16 code, void* listener_inst, PFN_on_event on_event_cb) {
 }
 
 b8 event_unregister(u16 code, void* listener_inst, PFN_on_event on_event_cb) {
-    if (initialized == FALSE) {
+    if (!initialized) {
         return FALSE;
     }
 
@@ -98,7 +98,7 @@ b8 event_unregister(u16 code, void* listener_inst, PFN_on_event on_event_cb) {
 }
 
 b8 event_fire(u16 code, void* sender, event_context data) {
-    if (initialized == FALSE) {
+    if (!initialized) {
         return FALSE;
     }
 
@@ -118,5 +118,5 @@ b8 event_fire(u16 code, void* sender, event_context data) {
     }
 
     // Not found
-    return TRUE;
+    return FALSE;
 }
