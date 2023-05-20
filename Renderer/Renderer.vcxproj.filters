@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="containers">
+      <UniqueIdentifier>{FB7E5497-E736-96E4-503E-6F403C1531D5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\containers\darray.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\application.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\input.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\logger.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\vassert.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\vmemory.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\defines.h" />
+    <ClInclude Include="src\entry.h" />
+    <ClInclude Include="src\game_types.h" />
+    <ClInclude Include="src\platform\platform.h">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\clock.h" />
+    <ClInclude Include="src\renderer\renderer_frontend.h" />
+    <ClInclude Include="src\renderer\renderer_backend.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_backend.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\containers\darray.c">
+      <Filter>containers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\application.c">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\event.c">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\input.c">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\logger.c">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\vmemory.c">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\platform_win32.c">
+      <Filter>platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\clock.c" />
+    <ClCompile Include="src\renderer\renderer_backend.c" />
+    <ClCompile Include="src\renderer\renderer_frontend.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_backend.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\renderer\renderer_types.inl" />
+    <None Include="src\renderer\vulkan\vulkan_types.inl" />
+  </ItemGroup>
+</Project>

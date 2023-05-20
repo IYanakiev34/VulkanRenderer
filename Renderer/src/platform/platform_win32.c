@@ -2,9 +2,13 @@
 
 // Conditional compilation
 #if R_PLATFORM_WINDOWS
-#include <core/logger.h>
+#include "core/logger.h"
+#include "core/input.h"
+
+// Std libraries
 #include <stdlib.h>
 
+// Windows
 #include <windows.h>
 #include <windowsx.h> // param input extraction
 
@@ -94,7 +98,7 @@ b8 platform_startup(
     state->hwnd = handle;
 
     // Show the window
-    b32 should_activate = 1; // TODO: Should be parameter toindicate if we want to take input
+    b32 should_activate = 1; // TODO: Should be parameter to indicate if we want to take input
     i32 show_window_command_flags = should_activate ? SW_SHOW : SW_SHOWNOACTIVATE;
 
     // if intially minimized:  SW_MINIMIZE : SW_SHOWMINNOACTIVE;
@@ -139,15 +143,15 @@ void platform_free(void* block, b8 aligned) {
 }
 
 void* platform_zero_memory(void* block, u64 size) {
-    memset(block, 0, size);
+    return memset(block, 0, size);
 }
 
 void* platform_copy_memory(void* dest, void* src, u64 size) {
-    memcpy(dest, src, size);
+    return memcpy(dest, src, size);
 }
 
 void* platform_set_memory(void* block, i32 value, u64 size) {
-    memset(block, value, size);
+    return memset(block, value, size);
 }
 
 void platform_console_write(const char* msg, u8 color) {
@@ -213,19 +217,19 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
     case WM_KEYUP:
     case WM_SYSKEYUP: {
         b8 pressed = (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN);
-        b8 released = (msg == WM_KEYUP || msg == WM_SYSKEYUP);
-        // TODO: input processing here
+        keys key = (u16)w_param; // key code
+        input_process_key(key,pressed);
     } break;
     case WM_MOUSEMOVE: {
         i32 x_position = GET_X_LPARAM(l_param);
         i32 y_position = GET_Y_LPARAM(l_param);
-        // TODO: input processing
+        input_process_mouse_move(x_position, y_position);
     } break;
     case WM_MOUSEWHEEL: {
         i32 z_delta = GET_WHEEL_DELTA_WPARAM(w_param);
         if (z_delta != 0) {
             z_delta = (z_delta < 0) ? -1 : 1; // Flatten value
-            // TODO: process input
+            input_process_mouse_wheel(z_delta);
         }
     } break;
     case WM_LBUTTONDOWN:
@@ -234,9 +238,27 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_RBUTTONUP: {
-        b8 is_pressed = (msg == WM_LBUTTONDOWN || msg == WM_MBUTTONDOWN || msg == WM_RBUTTONDOWN);
+        b8 pressed = (msg == WM_LBUTTONDOWN || msg == WM_MBUTTONDOWN || msg == WM_RBUTTONDOWN);
         b8 is_released = (msg == WM_LBUTTONUP || msg == WM_MBUTTONUP || msg == WM_RBUTTONUP);
-        // TODO: process input processing on this
+        mouse_buttons button = MB_MAX_BUTTONS;
+
+        switch (msg) {
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+            button = MB_LEFT;
+            break;
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+            button = MB_RIGHT;
+            break;
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+            button = MB_MIDDLE;
+            break;
+        }
+
+        if (button != MB_MAX_BUTTONS)
+            input_process_button(button, pressed);
     } break;
 
     }

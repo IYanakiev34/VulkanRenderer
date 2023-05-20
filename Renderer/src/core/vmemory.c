@@ -50,7 +50,7 @@ void* vallocate(u64 size, memory_tag tag) {
 
     // TODO: Handle aligned memory
     void* block = platform_allocate(size, FALSE);
-    platform_zero_memory(&block, size);
+    block = platform_zero_memory(block, size);
     return block;
 }
 

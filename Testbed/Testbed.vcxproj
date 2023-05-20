@@ -82,7 +82,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -102,7 +102,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -123,7 +123,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -133,6 +133,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\game.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\game.c" />
     <ClCompile Include="src\main.c" />
   </ItemGroup>
@@ -140,9 +143,6 @@
     <ProjectReference Include="..\Renderer\Renderer.vcxproj">
       <Project>{7CCE658F-689B-C09A-91B4-AE427DE0F528}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

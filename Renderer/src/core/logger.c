@@ -16,6 +16,7 @@ void report_assertion_failure(const char* expression, const char* msg, const cha
 
 b8 intialize_logging() {
     // TODO: Create log file
+    VINFO("Logging initialized!");
 }
 
 void shutdown_logging() {

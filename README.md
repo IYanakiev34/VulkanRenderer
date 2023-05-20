@@ -178,7 +178,7 @@ keyboard etc. We can also use it at later stage for the ECS components. I will p
 Currently the event will be ran instantaniously, in the future they will be queue for processing later and probably run on a separate
 thread.
 
-![Event system idea](fhdhfh.png)
+![Event system idea](Diagrams/event_system.png)
 
 #### Event system data structures
 One question is first of all what is na event? Who sends events? How listens to events? How to add callbacks?
@@ -271,12 +271,39 @@ What should we do when a key / button is pressed / released or the mouse moved? 
 why we have the event system. We will simply fire an event with the information (like key code value)
 and notify any listeners about the state change. This is how the two systems work together.
 
-Finally, we will need to integrate this system with the application. Meaning initalize it, shut it down,
-and update it in the game frame. This finalizes the system itself.
-
 We also need to integrate it with the platform layer. This is the place we will collect information
 from window events, and update potentially the input state and also file evens, for example when window
-closes or something like that.
+closes or something like that. In out win32_process_message function we will basically delegate
+the inputs that we receive to be processed by the input system. For example is a key is pressed,
+get the key code and if it is pressed then just send it to the input_process_key function.
+
+Finally, we will need to integrate this system with the application. This involves a few parts.
+First we will need to initialize the input system. Second we will need to register for some events,
+however, we need to define callback function. For now I will have 2.
+
+```C
+ b8 application_on_event(u16 code, void *sender, void *listener_ints, event_context data);
+ b8 applciation_on_key(u16 code, void *sender, void *listener_inst, event_context data);
+ // As you can see these two functions follow the signature defined in event.h for a callback function.
+```
+
+These on event function will simply listen for the application quit event and then set the is runnning variable to
+FALSE. If we handle the event we return TRUE, else FALSE. For the on key we will simply console log if the key
+has been pressed or released and the event will be considered handled. This will scaffold the system for now.
+How do we register and deregister for events? Simple
+```C
+	// register
+	event_register(EVENT_CODE_APPLICATION_QUIT,0,application_on_event);
+	event_register(EVENT_CODE_KEY_PRESSED,0,application_on_key);
+	event_register(EVENT_CODE_KEY_RELEASED,0, application_on_key);
+	
+	// Deregister
+	event_unregister(EVENT_CODE_APPLICATION_QUIT,0,application_on_event);
+	event_unregister(EVENT_CODE_KEY_PRESSED,0,application_on_key);
+	event_unregister(EVENT_CODE_KEY_RELEASED,0, application_on_key);
+```
+
+Lastly we simply need to shutdown the input system.
 
 ## Engine Part 6
 I will now cover the very very very basic and high level design of the renderer system itself.
@@ -288,6 +315,14 @@ the renderer (generally any big dynamic system like that)
 
 This design will allow us to easily substitue the backend later on if we need to and create a nice abstraction.
 This pattern could potentially be used for many different systems, this could event be used for plugins and stuff
-like this. Having this out of the way I will not outline what are some requirments for the renderer itself, what should
-the renderer be capable to do?
+like this.
+
+The structure for rendering will be the following. We will have a frontend through which we will be able to interact
+with very high level functionality. For example submitting a mesh for rendering, creating a material, texture,etc.
+This frontend will delegate this work to the renderer backend. Which will in it's turn delegate it to the specific
+renderer backend that we have for example vulkan backend. The actual vulkan renderer will have routines that abstract
+the core api and provide a higher level functionality. It will be responsible for the implementation details
+of creating a uniform buffer, or a descriptor sets, etc.
+
+![Renderer overview](Diagrams/renderer_overview.png)
 

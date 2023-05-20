@@ -27,7 +27,7 @@ project "Renderer"
 	kind "SharedLib"
 	staticruntime "off"
 	language "C"
-	cdialect "C11"
+	cdialect "C17"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -73,6 +73,10 @@ project "Renderer"
 		defines "VKR_DEBUG"
 		runtime "Debug"
 		symbols "On"
+		
+		defines{
+			"VASSERTIONS_ENABLED"
+		}
 
 
 	filter "configurations:RELEASE"
@@ -91,7 +95,7 @@ project "Editor"
 	location "Editor"
 	kind "ConsoleApp"
 	language "C"
-	cdialect "C11"
+	cdialect "C17"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -141,7 +145,7 @@ project "Testbed"
 	location "Testbed"
 	kind "ConsoleApp"
 	language "C"
-	cdialect "C11"
+	cdialect "C17"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -174,7 +178,6 @@ project "Testbed"
 		defines "TB_DEBUG"
 		runtime "Debug"
 		symbols "On"
-
 
 	filter "configurations:RELEASE"
 		defines "TB_RELEASE"

@@ -2,9 +2,6 @@
 
 #include "defines.h"
 
-// Disable by commenting out the line. Btter solution is to do compiler define
-#define VASSERTIONS_ENABLED
-
 #ifdef VASSERTIONS_ENABLED
 #if _MSC_VER
 #include <intrin.h>

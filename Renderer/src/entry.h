@@ -12,6 +12,7 @@ extern b8 create_game(game* out_game);
 */
 int main(void)
 {
+    VINFO("Initializing memory system...");
     initialize_memory();
 
     game game_inst;// Create game

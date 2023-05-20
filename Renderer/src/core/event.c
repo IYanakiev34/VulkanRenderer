@@ -34,6 +34,7 @@ b8 event_initialize() {
 
     vzero_memory(&state, sizeof(state));
     initialized = TRUE;
+    VINFO("Event system initialized!");
     return TRUE;
 }
 
@@ -103,7 +104,6 @@ b8 event_fire(u16 code, void* sender, event_context data) {
     }
 
     if (state.registered[code].events == 0) {
-        VWARN("Cannot fire event since it is not registered! Event code: %i", code);
         return FALSE;
     }
 
