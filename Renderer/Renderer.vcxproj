@@ -154,6 +154,7 @@
     <ClInclude Include="src\core\clock.h" />
     <ClInclude Include="src\core\event.h" />
     <ClInclude Include="src\core\input.h" />
+    <ClInclude Include="src\core\vstring.h" />
     <ClInclude Include="src\core\logger.h" />
     <ClInclude Include="src\core\vassert.h" />
     <ClInclude Include="src\core\vmemory.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\renderer\renderer_backend.h" />
     <ClInclude Include="src\renderer\renderer_frontend.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_backend.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\containers\darray.c" />
@@ -173,6 +175,7 @@
     <ClCompile Include="src\core\input.c" />
     <ClCompile Include="src\core\logger.c" />
     <ClCompile Include="src\core\vmemory.c" />
+    <ClCompile Include="src\core\vstring.c" />
     <ClCompile Include="src\platform\platform_win32.c" />
     <ClCompile Include="src\renderer\renderer_backend.c" />
     <ClCompile Include="src\renderer\renderer_frontend.c" />

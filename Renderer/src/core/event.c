@@ -112,8 +112,7 @@ b8 event_fire(u16 code, void* sender, event_context data) {
     for (u64 idx = 0; idx != registered_count; ++idx) {
         registered_event e = state.registered[code].events[idx];
         if (e.cb(code, sender, e.listener, data)) {
-            // If event handled do not dispatch further
-            return TRUE;
+            return TRUE; // If event handled do not dispatch further
         }
     }
 

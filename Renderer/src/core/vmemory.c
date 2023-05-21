@@ -1,6 +1,7 @@
 #include "vmemory.h"
 #include "platform/platform.h"
 #include "logger.h"
+#include "vstring.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -84,7 +85,7 @@ char* get_memory_usage_str() {
     const u64 kib = 1024;
 
     char buffer[5000] = "System memory use (tagged):\n";
-    u64 offset = strlen(buffer);
+    u64 offset = string_length(buffer);
 
     for (u32 idx = 0; idx != MEMORY_TAG_MAXTAGS; ++idx) {
         char unit[4] = "XiB";

@@ -4,6 +4,8 @@
 #if R_PLATFORM_WINDOWS
 #include "core/logger.h"
 #include "core/input.h"
+#include "containers/darray.h"
+#include "core/vstring.h"
 
 // Std libraries
 #include <stdlib.h>
@@ -163,7 +165,7 @@ void platform_console_write(const char* msg, u8 color) {
     OutputDebugStringA(msg); // Output to debug console
 
     // Output to the standard console
-    u64 length = strlen(msg);
+    u64 length = string_length(msg);
     LPDWORD number_written = 0;
     WriteConsoleA(console_handle, msg, (DWORD)length, number_written, 0);
 }
@@ -177,7 +179,7 @@ void platform_console_write_error(const char* msg, u8 color) {
     OutputDebugStringA(msg); // Output to debug console
 
     // Output to the standard console
-    u64 length = strlen(msg);
+    u64 length = string_length(msg);
     LPDWORD number_written = 0;
     WriteConsoleA(console_handle, msg, (DWORD)length, number_written, 0);
 }
@@ -189,7 +191,12 @@ f64 platform_get_absolute_time() {
 }
 
 void platform_sleep(u64 ms){
-    Sleep(ms);
+    Sleep((DWORD)ms);
+}
+
+void platform_get_required_extensions_names(char*** names_darray) {
+    const char* win32_surface_ext_name = "VK_KHR_win32_surface";
+    darray_push(*names_darray, win32_surface_ext_name);
 }
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {

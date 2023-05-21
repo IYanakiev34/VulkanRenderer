@@ -8,7 +8,7 @@ b8 create_game(game* game_out) {
 
     // Application configuration
     {
-        game_out->app_config.name = "Tiny Game Engine";
+        game_out->app_config.name = "Testbed Game";
         game_out->app_config.start_x = 100;
         game_out->app_config.start_y = 100;
         game_out->app_config.start_width = 1200;

@@ -6,10 +6,12 @@
 #include "event.h"
 #include "input.h"
 
-// Miscelanious
+// Resources
 #include "game_types.h"
-#include "platform/platform.h"
 #include "clock.h"
+#include "vstring.h"
+
+#include "platform/platform.h"
 
 // Renderer
 #include "renderer/renderer_frontend.h"
@@ -120,7 +122,7 @@ b8 application_run() {
     f64 target_frame_time = 1.f / 60.f;
 
     char* memory_usage = get_memory_usage_str();
-    VINFO(memory_usage); // HACK: leaks memory fine for now
+    VINFO(memory_usage); // HACK: leaks memory
 
     while (app_state.is_running)
     {
@@ -167,7 +169,7 @@ b8 application_run() {
 
                 // Give a bit back to system if we reached target frame time
                 if (remaining_seconds > 0.0000) {
-                    u64 remaining_ms = (remaining_seconds * 1000);
+                    u64 remaining_ms = ((u64)remaining_seconds * 1000);
 
                     b8 limit_frames = FALSE;// TODO: configurable
                     if (remaining_ms > 0 && limit_frames) {
@@ -206,12 +208,6 @@ b8 application_run() {
         platform_shutdown(&app_state.platform);
         VINFO("Shutting down logging system...");
         shutdown_logging(); // Logging after platform since we might want to log final stuff to platform
-    }
-
-    // Check memory at exit
-    {
-        memory_usage = get_memory_usage_str();
-        VINFO(memory_usage); // HACK: leaks memory fine for now
     }
 
     return TRUE;
