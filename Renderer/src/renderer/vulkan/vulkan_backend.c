@@ -1,11 +1,13 @@
 #include "vulkan_backend.h"
 #include "vulkan_types.inl"
-#include "core/logger.h"
+#include "vulkan_device.h"
+#include "vulkan_platform.h"
 
+// General includes
+#include "core/logger.h"
 #include "core/vstring.h"
 #include "containers/darray.h"
 #include "platform/platform.h"
-#include "vulkan_platform.h"
 
 // static vulkan context
 static vulkan_context context;
@@ -129,13 +131,41 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     VK_CHECK(result_debugger);
     VDEBUG("Vulkan debug mesenger created");
 #endif
+    // Surface creation
+    VINFO("Creating vulkan surface...")
+    if (!platform_create_vulkan_surface(backend->plat_state, &context)) {
+        VERROR("Could not create vulkan surface. Aborting initalization of backend");
+        return FALSE;
+    }
+    VINFO("Vulkan surface created!");
+
+    // Device creation
+    if (!vulkan_device_create(&context)) {
+        VFATAL("Failed to create vulkan device!");
+        return FALSE;
+    }
 
     VINFO("Vulkan renderer intialized successfully.");
     return TRUE;
 }
 
 void vulkan_renderer_backend_shutdown(renderer_backend* backend) {
-    // TODO: clean up
+    // NOTE: resources should be destroyed in reverse order of aqcuisition
+
+    // Destroy debugger
+#if defined(VKR_DEBUG)
+    VDEBUG("Destroying Vulkan Debugger...");
+    PFN_vkDestroyDebugUtilsMessengerEXT destroy_func;
+    destroy_func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(context.instance, "vkDestroyDebugUtilsMessengerEXT");
+    VASSERT(destroy_func);
+    destroy_func(context.instance, context.debugger, context.allocator);
+#endif
+
+    vulkan_device_destroy(&context);
+
+    // Destroy instance
+    VINFO("Destroying Vulkan Instance...");
+    vkDestroyInstance(context.instance, context.allocator);
 }
 
 void vulkan_renderer_backend_resized(renderer_backend* backend, u16 width, u16 height) {

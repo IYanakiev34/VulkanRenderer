@@ -21,6 +21,7 @@ b8 renderer_initialize(const char* application_name, struct platform_state* plat
 
 void renderer_shutdown() {
     backend->shutdown(backend);
+    renderer_backend_destroy(backend);
     vfree(backend, sizeof(renderer_backend), MEMORY_TAG_RENDERER);
 }
 

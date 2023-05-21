@@ -165,6 +165,7 @@
     <ClInclude Include="src\renderer\renderer_backend.h" />
     <ClInclude Include="src\renderer\renderer_frontend.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_backend.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_device.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_platform.h" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +181,7 @@
     <ClCompile Include="src\renderer\renderer_backend.c" />
     <ClCompile Include="src\renderer\renderer_frontend.c" />
     <ClCompile Include="src\renderer\vulkan\vulkan_backend.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_device.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\renderer\renderer_types.inl" />

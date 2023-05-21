@@ -326,3 +326,76 @@ of creating a uniform buffer, or a descriptor sets, etc.
 
 ![Renderer overview](Diagrams/renderer_overview.png)
 
+When we initialize vulkan we will first need to create a VkInstance. A VkInstance is an object through which we can interact
+with the Vulkan API. For an instance we need a few things like:
+
+1. Extension count + names
+2. Layer count + names
+3. Application configuration (version, name, etc)
+
+The extensions and layers can be set by us and also query what type of extensions and validation
+layers we support. Extensions we will need for sure like surface extension to draw (generic one +
+OS specific extension for surface). The validation layers will only be used in DEBUG builds. These
+layer will validate input that we send to the command buffers. We will also create a debugger for Vulkan.
+This will once again only be used in the DEBUG builds. The debugger is very easy to set, we need
+to load the function address since this is extension, and we will need to provide a callback
+function for the messages to be printed to the console. We will use our logger to format and print them.
+This will all be done in the initialization of the vulkan backend. For the shutdown we will need to destroy
+the debugger once again by loading a function pointer addres (only if we are in DEBUG build). We will
+also need to destroy the instance (technically not needed but better be explicit about it). This will be
+all for now later we will need to start setting up the physical and logical devices.
+
+## Engine Part 7
+Now we need to setup the physical and logical devices. In Vulkan a physical device
+is basically your GPU (or GPUs if you have more than one). This represent the memory,
+capabilities of the GPU. The logical device is the interface for your application
+through which you will interact with your GPU. So for us the logical device is whats most
+important but in order to get it we need to fist obtain the physical devices.
+
+I will provide in the end some graphs of how code is called and what are some changes
+to the vulkan types stucture.
+
+The high-level overview of the process is the following. You first query your GPUs and find which
+one you want to use. You query its properties, queues, surface capabilities, etc. Then you pick
+one and you use it to create the logical device. After the logical device is created you obtain
+the various queues you need for example: graphics queue, transfer queue, compute or present queues.
+
+Step one is to basically find which physical device we will use. This is not as simple as it 
+sounds since vulkan can provide a lot of information on you GPU so it is basically up to
+you how hard you want to make your job. Our `basic` requirements will be:
+
+```C
+typedef struct vulkan_physical_device_requirments {
+    b8 graphics;
+    b8 present;
+    b8 compute;
+    b8 transfer;
+    const char** device_extensions; // darray
+    b8 sampler_anisotropy;
+    b8 discrete_gpu;
+} vulkan_physical_device_requirments;
+```
+
+As with most vulkan code the drill is the same and you can start to see a pattern to it.
+First we enumerate the physical devices to gte the count, then again to store them.
+After that for each physical device we will get it `properties`, `memory capabilities`, and `features`.
+The we will compare with our requirments and see if we match. To meet the requirments the GPU needs
+to have the proper queues, extra features, extensions, and capabilities. Once we find one, we then print
+out to basic information. Such as drive versions, vulkan api version supports, memory on the GPU. And finally
+set out context->device with the proper parameters that we have obtainer. Once we have the layout of the physical
+device we need to create the logical one.
+
+It is important to note that we `DO NOT CREATE` a physical device. This is a system resource that we just query
+to obtain information from. The `logical device` is what interfaces with your GPU. So we first check to see if
+we share queues. Each queue type belongs to family index, we want to see if we have dedicated queues or some will be shared.
+After that we will creaste the queues, and as will every vulkan object we create an information structure, fill it out
+for every queue and then create them. After the queues are created we query their handles. We need to store the handles
+in the `vulkan_device` strcuture since we will need to interact with them and submit work to them. 
+
+Finally we need to finish up the destruction of the instances, devices, queues etc. So in th vulkan renderer backend destroy
+function we need to know call the device destroy function. Since everything that is child of the instance needs to be destroyed
+before it. In the vulka device destroy we need to do the same. So we first destroy the logical device. Then we release any resource
+that the physical device neede like: extension names, of surface formats, or present modes. This concludes the destuction of the device.
+
+
+![Updated vulkan types overview](Diagrams/updated_vulkan_types.png)

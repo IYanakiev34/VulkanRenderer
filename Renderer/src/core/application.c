@@ -210,6 +210,9 @@ b8 application_run() {
         shutdown_logging(); // Logging after platform since we might want to log final stuff to platform
     }
 
+    memory_usage = get_memory_usage_str();
+    VINFO(memory_usage); // HACK: leaks memory
+
     return TRUE;
 }
 
@@ -228,7 +231,7 @@ b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context
     if (code == EVENT_CODE_KEY_PRESSED) {
         if (key_code == KEY_ESCAPE) {
             // Fire event to self. Maybe other listeners also
-            event_context event = { .data.u16[0] = 1 };
+            event_context event = {0};
             event_fire(EVENT_CODE_APPLICATION_QUIT, 0, event);
             return TRUE;
         }
