@@ -6,6 +6,7 @@
 #include "core/input.h"
 #include "containers/darray.h"
 #include "core/vstring.h"
+#include "core/event.h"
 
 // Std libraries
 #include <stdlib.h>
@@ -225,8 +226,9 @@ b8 platform_create_vulkan_surface(struct platform_state* plat_state, struct vulk
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
     case WM_CLOSE:
-        // TODO: Fire an event for the application to quit
-        return 0; // Let the OS know we have handled it
+        event_context event = { 0 };
+        event_fire(EVENT_CODE_APPLICATION_QUIT, 0, event);
+        return TRUE;
     case WM_ERASEBKGND:
         // Notify the OS that erasing will be handled by the application not the OS
         return 1;

@@ -397,5 +397,21 @@ function we need to know call the device destroy function. Since everything that
 before it. In the vulka device destroy we need to do the same. So we first destroy the logical device. Then we release any resource
 that the physical device neede like: extension names, of surface formats, or present modes. This concludes the destuction of the device.
 
+I will conclude with a quit walkover the order of the functions that are being called.
+
+1. application.c - renderer_initialize
+2. renderer_frontend.c - renderer_backend_create (to create the proper backend in our case Vulkan) followed by backend->initialize to initialize vulkan
+3. vulkan_backend.c - vulkan_renderer_backend_initialize. Create the instance + devices
+
+For shutdown we have
+1. application.c - renderer_shutdown
+2. renderer_frontend.c - backend->shutdown to clear any resources and state followed by renderer_backend_destroy to delete the backend
+3. vulkan_backend.c - vulkan_renderer_backend_shutdown implementation of the shutdown of the renderer. Cleans up any state and frees resources acquired by vulkan.
+
 
 ![Updated vulkan types overview](Diagrams/updated_vulkan_types.png)
+
+## Engine Part 8
+
+We now have to create the swapchain. The swapchain is responsible basically for presenting the buffer that you see
+on screen so it will involve quite a lot of things. 
