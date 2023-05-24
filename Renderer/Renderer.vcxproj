@@ -165,8 +165,14 @@
     <ClInclude Include="src\renderer\renderer_backend.h" />
     <ClInclude Include="src\renderer\renderer_frontend.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_backend.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_command_buffer.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_device.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_fence.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_framebuffer.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_image.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_platform.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_renderpass.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_swapchain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\containers\darray.c" />
@@ -181,7 +187,13 @@
     <ClCompile Include="src\renderer\renderer_backend.c" />
     <ClCompile Include="src\renderer\renderer_frontend.c" />
     <ClCompile Include="src\renderer\vulkan\vulkan_backend.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_command_buffer.c" />
     <ClCompile Include="src\renderer\vulkan\vulkan_device.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_fence.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_framebuffer.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_image.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_renderpass.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_swapchain.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\renderer\renderer_types.inl" />

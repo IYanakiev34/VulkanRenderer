@@ -15,7 +15,7 @@ VAPI u64 string_length(const char* str);
 * @param str - The string that will be duplicated
 * @return char * - A pointer to the duplicated string
 */
-VAPI char* string_duplicate(const char* str);
+VAPI char* string_duplicate(char* str);
 
 
 /**

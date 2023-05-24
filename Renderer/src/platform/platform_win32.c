@@ -134,9 +134,12 @@ void platform_shutdown(platform_state* plat_state) {
 
 b8 platform_pump_message(platform_state* plat_state){
     MSG message;
-    while (PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
-        TranslateMessage(&message);
-        DispatchMessageA(&message);
+    internal_state* state = (internal_state*)plat_state->internal_state;
+    if (state) {
+        while (PeekMessageA(&message, NULL, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&message);
+            DispatchMessageA(&message);
+        }
     }
 
     return TRUE;
@@ -225,6 +228,11 @@ b8 platform_create_vulkan_surface(struct platform_state* plat_state, struct vulk
 
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param) {
     switch (msg) {
+    case WM_QUIT: {
+        event_context event = { 0 };
+        event_fire(EVENT_CODE_APPLICATION_QUIT, 0, event);
+        return TRUE;
+    }
     case WM_CLOSE:
         event_context event = { 0 };
         event_fire(EVENT_CODE_APPLICATION_QUIT, 0, event);

@@ -11,7 +11,6 @@ void* _darray_create(u64 length, u64 stride) {
     new_array[DARRAY_STRIDE] = stride;
 
     return (void*)(new_array + DARRAY_FIELD_LENGTH);
-
 }
 
 void _darray_destroy(void* array) {
@@ -55,7 +54,7 @@ void* _darray_push(void* array, const void* value_ptr) {
 
     u64 address = (u64)array;
     address += length * stride;
-    vcopy_memory((void *)address, value_ptr, stride);
+    vcopy_memory((void *)address, (void*) value_ptr, stride);
     _darray_field_set(array, DARRAY_LENGTH, length + 1);
     return array;
 }
@@ -90,7 +89,7 @@ void* _darray_insert_at(void* array, u64 index, const void* value_ptr) {
             stride * (length - index));
     }
 
-    vcopy_memory((void*)(address + index * stride), value_ptr, stride);
+    vcopy_memory((void*)(address + index * stride), (void *)value_ptr, stride);
     _darray_field_set(array, DARRAY_LENGTH, length + 1);
     return array;
 }

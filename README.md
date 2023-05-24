@@ -414,4 +414,171 @@ For shutdown we have
 ## Engine Part 8
 
 We now have to create the swapchain. The swapchain is responsible basically for presenting the buffer that you see
-on screen so it will involve quite a lot of things. 
+on screen so it will involve quite a lot of things. In OpenGL you have a default frame buffer to render to, however
+in Vulkan you don't. So we need to set up that. We can also account for multiple frames in flight which is pretty nice
+since modern GPUs support upto 3 of them. Meaning we can present 1 and have 3 more that are being rendered to off screen.
+
+The interface for a swapchain is pretty simple, we need to be abel to create it, recreate it, and destroy it.
+We need to recreate it because we migth get window resize.
+
+We first need to obatain the surface format that we will draw to. Then we obtain the present modes. These
+are easily obtained since we already have them stored in the cotext->device.swapchain_support variable.
+From then we find the extend of the surface meaning how big it is using the width and height. From there
+we simply build up the VkSwapchainCreateInfoKHR structure. Some notes on this structure is the usage of
+the swapchain. We will use it as a color attachment meaning we will present it to the screen. Also dependeing on
+the queues and if we share the same graphics and present queue we will use different mode for sharing. We will
+either have concurrent or exclusive. After the swapchain is created we need to get the images and create the image
+views. The image count will depend on the frames in fligh that we set, which depends on the hardware itself.
+In vulkan images are the data owned by the swapchain however, we cannot access them. We need to create views
+in order to access the images. We will again create inof objects for the views fill them and create them. We
+need the same amount of views as images. All fo this infromation meaning:
+
+1. Frames in flight
+2. Image handles
+3. Views handles
+4. Surface format
+5. Image count
+6. Swapchain handle
+
+will be stored in the vulkan_swapchain struct. Thi struct will be used in the context struct.
+After all the views aree created we will need to create our depth stencil attachment. In order to
+do this we define some interface to handle image creation. This can be found in vulkan_image.h
+We need to be able to create an image from some configuration, create a view for an image, and
+destroy an image. This is pretty simple we will basically fill info structs and create the resource.
+What is a vulkan image however. Each vulkan image has 3 properties `Image handle`, `Image View Handle`,
+`Device Memory handle`. In order to create an image we need to fill an info object create it. Then 
+allocate memory for the image and bind it. To destroy the image we simply disrtoy the view, free the
+memory and destroy the image itself.
+
+Going back to the swapchain we use the image interface to create the depth stencil image and place it
+int he swapchain depth attachment which is of type `vulkan_image`. In order to create a swapchain
+we do that in the backend of vulkan we simply call the method to create the swapchain. We also destroy
+it in the backend as the first thing. For the swapchain we also have a present method. This method
+will present from a queue an image. This method would present from the present queue using vkQueuePresent.
+We also make a method to acquire the next image. This again uses simple api calls to vulkan to acquire the next image
+in the swapchain.
+
+What is the general idea why do we do all of this. We need to be abel to render multiple frames, however
+we need to store the data in a convinient way so that we can access all the resources needed when we need them.
+We also need to account for resizing of window and swapchain recreation. This leaves us with all of these structures
+and handles that we keep pointers to in memory. We need to be able to index images in order to see in frame in flight
+X which image should we modify, what attachments it has, etc.
+
+// TODO: add graphs to visualize the whole thing + update vulkan types 
+
+## Engine Part 9
+We now need to move to renderpasses. A renderpass encapsulates all the logic that should be performed when
+rendering a single pass. Rendering is divided into passes for example in deffered rendering you do
+geomertry pass and then light pass. Okay so this pass should have everything, like commands, queues,
+attachments, etc. At its very core a render pass should encapsulate the following interface:
+
+1. Create render pass
+2. Destroy render pass
+3. Begin renderpass
+4. End renderpass
+
+For the creation of the renderpass we actually need to do most of the work. Since renderpasses can get very complex
+you can have subpasses withing a pass itself. You can also have dependencies between them, and also you can
+handle attachments differently, for example you draw to one buffer, but you perserve second one for input
+to the next pass and etc. What we need to create a renderpass is the following:
+
+1. VkSubpassDescription
+2. VkAttachmentDescription*
+3. VkAttachmentReference
+4. VkSubpassDependency
+5. VkRenderpassCreateInfo
+
+The process is lengthy and many things could be made configurable look in the code.
+
+To destroy a render pass it is very simple just call the destroy method on it.
+To begin a render pass you simply fill out a begin info struct. You need a command
+buffer however, this is something I will cover in the next section. Imagine that
+this command buffer will hold all the command for this renderpass. So fill
+out this info and call vkCmdBeginRenderPass passing the renderpass handle, buffers,
+and usage. One important note about the renderpass and other resource in the engine
+is that we will track their state. it is importnant to understand that most of the
+graphics API operate in a state machine fashion. This is deu to the GPUs themself.
+State machine allow for very high level of parallelization, we will keep track of states
+using enums on the CPU side to be able to see what is going on.
+
+Ending a renderpass is super simple just pass the command buffer handle to it.
+
+In order to tie evrything together what do we need:
+
+1. Hold a main renderpass in the context
+2. Create the main renderpass in the render_backend_create function  after the swapchain
+3. Destroy the renderpass in the backend destroy function calling the appropriate renderpass function
+
+
+## Engine Part 10
+Command buffers and command pools. Soo now we start to slowly see the good stuff. Keep in mind
+again we will hard code some things for simplicity sake and to get things running. I will go
+over the main interface and what are command queues and pools. So basically we want to store
+all of the GPU functions that we want to make in a command and then execute the queue of commands.
+Command buffers do not appear from thin air, rather we need a pool of buffers and we will simply acquire
+one when needed and release when needed. We need to store a pool for each queue we have so where
+do we store this information? Well command pools are divice type of thing so we will store them
+in the device, but the buffers themself will be stored in the context. We will
+create a thin wrapper around the vulkan command buffer which will ahve a handle to a buffer
++ state (again we need to know in which state a buffer is)
+
+A buffer could basically be in the following state ( in order I will list them)
+
+1. Not allocated
+2. Ready
+3. Recording
+4. Finished recording
+5. Submitted
+6. In renderpass
+
+So we will create the command pool when we query for a device, after we acquire queue family indices.
+The command buffers will be created after the renderpass. We will create a seperate function for them
+since we will need a command buffer per image view of the swapchain. We cannot share between them
+makes no sense. The command buffer itself will have a header file that will expose functionality
+for allocate,free, recording,end recording, submit state, reset, allocate_record_single_use_begin, end_single_use.
+
+Again we know the drill we fill an info object and allocate it from a pool. We also change the state to ready.
+For free we simply free and change the state to not allocate. For begin recording we fill a begin info struct
+and just say to vulkan to beign recording. Change the state t recording. End recording is just a single command
++ change state. The submit is only changing of state. Te other functions are just for ease of use
+many times we might want to create ad use a buffer on the spot even with a single command. This is why we have them
+we basically reuse the other functions for them. We only have one function which is the end single use which
+will ACTUALLY submit a command buffer to a queue.
+
+
+## Engine Part 11
+Framebuffers and sync objects. We have introduced the concept of frame buffers since we maintain
+its size and width, however we do not have an object to represent a framebuffer. This buffer is basically
+the screen buffer, or any buffer that we write information to / read also. These buffers will store
+the images and views we need in order to write or read to them and use shaders on them. The buffers
+will be assigned to pipelines and renderpasses. 
+
+The framebuffer API will be very simple. Just create and destroy a rame buffer based on a simple specification.
+A framebuffer is tied to a renderpass so we need to pass this, the width, height, attachments also in the form
+of Image Views.
+
+The destroy method simply destroy a framebuffer and its attachments since in the create method we do not simply
+move them but copy them to the frame buffer.
+
+Now the sync object. Why do we need them? So remmeber in the swapchain the API has quite a lot of fence
+and semaphore laying around. The idea is the following Semaphores are for GPU-GPU synchronization, we will
+use the for the hardware itself. The fences however ae for CPU-GPU synchronization. We can do stuff like
+oh wait until we have finished rendering the queue then do something. We need to set up this.
+
+First a thin wrapper around the VkFence, we will store a handle + boolean to indicate if we have signaled the fence.
+For the fence API again keep it simple. Create, Destroy, Wait, and Reset the fence. Create is done with an info object,
+destroy easy, we simply wait for it if it is signled and destroy. Wati means wait for it to finish with some timeout.
+Reset jsut places is in a not signaled state.
+
+Now we will add some stuff to our context: we want array of semaphores for the images availabel in the swapchain,
+another array for the queues if completed, fence array for the in_flight_fences, and another which is pointer to a pointer
+fence array. This array will point into the in_flight_fences, the idea is that if we are on frame 2 of the frame in flight
+we will point in index 2 of the images_in_flight fences, which will point to lets say in_flight_fence 0 and this will be
+the proper fence to use. This is essentially a mapping between a frame and fence this is why we have this auxilary array
+of pointers to fences.
+
+Finally we need to destroy the synchronization objects. This will be the first thing that we do in the destory method.
+Simply wait for the device to idle, then iterate through the semaphore array and fences and destroy them. Then destroy
+the darrays and set the pointers to 0 for good measure.
+
+

@@ -39,6 +39,7 @@ static_assert(sizeof(b8) == 1, "Expected b8 to be 1 bytes");
 
 #define TRUE 1
 #define FALSE 0
+#define VCLAMP(value,min,max) (value <= min) ? min : (value >= max) ? max : value;
 
 // Platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)

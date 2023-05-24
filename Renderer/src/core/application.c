@@ -202,12 +202,12 @@ b8 application_run() {
         event_shutdown();
         VINFO("Shutting down input system...");
         input_shutdown();
+        VINFO("Shutting down logging system...");
+        shutdown_logging(); // Logging after platform since we might want to log final stuff to platform
         VINFO("Shutting down renderer system...");
         renderer_shutdown();
         VINFO("Shutting down the platform...");
         platform_shutdown(&app_state.platform);
-        VINFO("Shutting down logging system...");
-        shutdown_logging(); // Logging after platform since we might want to log final stuff to platform
     }
 
     memory_usage = get_memory_usage_str();
@@ -252,4 +252,9 @@ b8 application_on_key(u16 code, void* sender, void* listener_inst, event_context
     }
 
     return FALSE;
+}
+
+void application_get_framebuffer_size(u32* width, u32* height) {
+    *width = app_state.width;
+    *height = app_state.height;
 }
