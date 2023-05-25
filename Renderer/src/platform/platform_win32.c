@@ -250,7 +250,10 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         u32 width = r.right - r.left;
         u32 height = r.bottom - r.top;
 
-        // TODO: fire event for window resize
+        event_context event;
+        event.data.u16[0] = width;
+        event.data.u16[1] = height;
+        event_fire(EVENT_CODE_RESIZED, 0, event);
         }break;
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:

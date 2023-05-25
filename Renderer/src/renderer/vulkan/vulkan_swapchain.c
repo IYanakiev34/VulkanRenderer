@@ -239,16 +239,6 @@ void destroy(vulkan_context* context, vulkan_swapchain* swapchain) {
     }
     VINFO("Destroyed image views of swapchain");
 
-    // Destroy frame buffers
-    VINFO("Destroying framebuffer of swapchain...");
-    if (swapchain->framebuffers) {
-        for (u32 idx = 0; idx != swapchain->image_count; ++idx) {
-            vulkan_framebuffer_destroy(context, &swapchain->framebuffers[idx]);
-        }
-    }
-    darray_destroy(swapchain->framebuffers);
-    VINFO("Destroyed framebuffers of swapchain");
-
     // Destroy swapchain
     vkDestroySwapchainKHR(context->device.logical_device, swapchain->handle, context->allocator);
 }

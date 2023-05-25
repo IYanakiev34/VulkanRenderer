@@ -13,7 +13,8 @@ void vulkan_fence_create(
     if (out_fence->is_signaled)
         fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    vkCreateFence(context->device.logical_device, &fence_info, context->allocator, &out_fence->handle);
+    VkResult res = vkCreateFence(context->device.logical_device, &fence_info, context->allocator, &out_fence->handle);
+    VK_CHECK(res);
 }
 
 void vulkan_fence_destroy(vulkan_context* context, vulkan_fence* fence) {
@@ -30,6 +31,7 @@ b8 vulkan_fence_wait(vulkan_context* context, vulkan_fence* fence, u64 timeout_m
         VkResult result = vkWaitForFences(context->device.logical_device, 1, &fence->handle, VK_TRUE, timeout_ms);
         switch (result) {
         case VK_SUCCESS:
+            fence->is_signaled = TRUE;
             return TRUE;
         case VK_TIMEOUT:
             VWARN("vk_fence_wait - Timed out!");
@@ -54,6 +56,7 @@ b8 vulkan_fence_wait(vulkan_context* context, vulkan_fence* fence, u64 timeout_m
 }
 
 void vulkan_fence_reset(vulkan_context* context, vulkan_fence* fence) {
+    // HACK: very important to fix
     if (fence->is_signaled) {
         VkResult res = vkResetFences(context->device.logical_device, 1, &fence->handle);
         VK_CHECK(res);

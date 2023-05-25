@@ -164,6 +164,11 @@ typedef struct vulkan_context {
     u32 framebuffer_width;
     u32 framebuffer_height;
 
+    // Used to indicate when the size has changed. If it does not match the frambuffer_size_last_generation
+    // a new one should be generated
+    u64 framebuffer_size_generation;
+    u64 framebuffer_size_last_generation;
+
 #if defined (VKR_DEBUG)
     VkDebugUtilsMessengerEXT debugger;
 #endif
@@ -179,7 +184,7 @@ typedef struct vulkan_context {
     u32 in_flight_fence_count;
     vulkan_fence* in_flight_fences;
     // Holds pointers to fences which exist and are owened elsewhere
-    vulkan_fence** images_in_flight;
+    vulkan_fence* images_in_flight;
 
     u32 image_index; // TODO: to use it
     u32 current_frame; // TODO: to use it

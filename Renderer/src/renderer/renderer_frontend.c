@@ -48,5 +48,10 @@ b8 renderer_draw_frame(render_packet* packet) {
 }
 
 void renderer_on_resize(u16 width, u16 height) {
-    // TODO: fill out
+    if (backend) {
+        backend->resized(backend, (u32) width, (u32)height);
+    }
+    else {
+        VERROR("renderer_on_resize - > Backend does not exist!");
+    }
 }

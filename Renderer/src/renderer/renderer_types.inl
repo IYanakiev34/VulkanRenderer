@@ -14,7 +14,7 @@ typedef struct renderer_backend {
 
     b8(*initialize)(struct renderer_backend* backend, const char* application_name, struct platform_state* plat_state);
     void (*shutdown)(struct renderer_backend* backend);
-    void (*resized)(struct renderer_backend* backend, u16 width, u16 height);
+    void (*resized)(struct renderer_backend* backend, u32 width, u32 height);
     b8(*begin_frame)(struct renderer_backend* backend, f64 delta_time);
     b8(*end_frame)(struct renderer_backend* backend, f64 delta_time);
 } renderer_backend;

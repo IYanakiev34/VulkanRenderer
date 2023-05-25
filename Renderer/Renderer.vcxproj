@@ -173,6 +173,7 @@
     <ClInclude Include="src\renderer\vulkan\vulkan_platform.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_renderpass.h" />
     <ClInclude Include="src\renderer\vulkan\vulkan_swapchain.h" />
+    <ClInclude Include="src\renderer\vulkan\vulkan_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\containers\darray.c" />
@@ -194,6 +195,7 @@
     <ClCompile Include="src\renderer\vulkan\vulkan_image.c" />
     <ClCompile Include="src\renderer\vulkan\vulkan_renderpass.c" />
     <ClCompile Include="src\renderer\vulkan\vulkan_swapchain.c" />
+    <ClCompile Include="src\renderer\vulkan\vulkan_utils.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\renderer\renderer_types.inl" />
