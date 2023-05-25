@@ -202,9 +202,10 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     create_command_buffers(backend);
 
     // Create sync objects
-    context.image_available_semaphores = darray_reserve(VkSemaphore, context.swapchain.max_frames_in_flight);
-    context.queue_complete_semaphore = darray_reserve(VkSemaphore, context.swapchain.max_frames_in_flight);
-    context.in_flight_fences = darray_reserve(vulkan_fence, context.swapchain.max_frames_in_flight);
+    context.in_flight_fence_count = context.swapchain.max_frames_in_flight;
+    context.image_available_semaphores = darray_reserve(VkSemaphore, context.in_flight_fence_count);
+    context.queue_complete_semaphore = darray_reserve(VkSemaphore, context.in_flight_fence_count);
+    context.in_flight_fences = darray_reserve(vulkan_fence, context.in_flight_fence_count);
 
     for (u8 idx = 0; idx != context.swapchain.max_frames_in_flight; ++idx) {
         VkSemaphoreCreateInfo semaphore_info = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
@@ -223,8 +224,7 @@ b8 vulkan_renderer_backend_initialize(renderer_backend* backend, const char* app
     // Actual owned fences are the in_flight_fences we point to them via an index
     // of the current frame so we know which fence is for the current frame
     context.images_in_flight = darray_reserve(vulkan_fence, context.swapchain.image_count);
-    for (u32 idx = 0; idx != context.swapchain.image_count; ++idx)
-        context.images_in_flight[idx].handle = 0;
+    vzero_memory(context.images_in_flight, sizeof(vulkan_fence) * context.swapchain.image_count);
 
     VINFO("Vulkan renderer intialized successfully.");
     return TRUE;
@@ -403,7 +403,7 @@ b8 vulkan_renderer_backend_end_frame(renderer_backend* backend, f64 delta_time) 
         vulkan_fence_wait(&context, &context.in_flight_fences[context.image_index], UINT64_MAX);
 
     // Make image fence as in-use by this frame TODO: fix it
-    // context.images_in_flight[context.image_index] = context.in_flight_fences[context.current_frame];
+    context.images_in_flight[context.image_index] = context.in_flight_fences[context.current_frame];
     
 
     // Reset the fence

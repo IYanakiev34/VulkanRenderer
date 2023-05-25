@@ -581,4 +581,81 @@ Finally we need to destroy the synchronization objects. This will be the first t
 Simply wait for the device to idle, then iterate through the semaphore array and fences and destroy them. Then destroy
 the darrays and set the pointers to 0 for good measure.
 
+## Engine Part 12 clearing the screen
+First this is something we have not yet done and it is to be able to resize the screen. For this
+we can go many different way I will just keep track of the current generation of the screen and the
+previous. These are 2 integers which will indicate if the framebuffer size has changed. We need
+to create an event in the platform and dispatch it. In the application we need to register
+for the event and deregister on close. The registration will be with a function that will check
+if the screen size has actually changed + if we have minimized, if it has changed we call the
+renderer_on_reszie function which will handle the resiz and store the new frame buffers.
+
+Then we need to implement on begin frame and on end frame. For the on begin we first check if
+we are recreating the swapchain currently and if so we boot out, if we have different size
+we trigger the new generation of swapchain and boot out. If everything is fine
+we proceed with the frame. First we wait on the fence for the current frame to be sure
+CPU and GPU are in sync. We then prepare a command buffer for graphics. Reset it's state
+then set it to recording. After that we fill it in with commands for now we just fill it
+in with a viewport and scissors (clipping plane). These are vulkan objects created on the stack
+and passed to the proper vkCmds. After that for good measure we set the renderpass width and height.
+
+
+### Note on viewport
+In Vulkan the screen (0,0) is the top left, however this is not intuitive and in most api's it is
+bottom left. Thus for the viewport we set the X to 0 and Y to the screen height. The for the
+actual width and height we pass the width and `-height` since we will draw from bottom to top.
+
+Okay. So this is frame begin. For frame end we will actually draw. We get the buffer for graphics
+and end recording for it. We then proceed to wait for the fences for the previos image of the frame
+to sync GPU and CPU in case the CPU goes too fast. The we set the handle to the images_in_flight
+to the current frame fence_in_flight. Then we reset the current fence in flight.
+To submit the buffer to a queue we need a submit into struct. So we fill it out. We need to pass
+in th semaphores for the queue and image for the current frame since the GPU will have to synchronize
+itself. We then create a pipeline stage flags and say that the flag for this pipeline will be
+the color attachment output bit. Meaning get the color attachment and what it is drawn to it. Finally
+we simply submit everything to the graphics queue. Then we simply call present method on the swapchain
+and voala the swapchain is presented.
+
+We have some auxilary methods such as recreating the swapchain. This involves checking if we are currently doing
+so and if so boot out. Make sure we have proper widht and height. Destroy the framebuffers and then call
+the actual method to recreate it.
+
+All in all, in order to actuall draw a frame we need to maintaince proper state between the CPU and the GPU
+we also need to make sure we pass in the proper semaphores for the GPU to GPU sync. The trickiest thing
+is probably the swapchain itself since we need to recreate it properly everytime we resize the window. This
+is why we need the validation layers to make sure we pass in the correct input to the swapchain.
+
+Currently we have a little mess in the code. For the future we will need to probably not have whole abstraction
+over the fence since actually we do not care of the is_signlaed state too much. We will also remove the renderpass
+and just use a pipeline to encapsulate everything from the renderpass to the pipeline itself. This will leave the 
+interfaces much much better.
+
+I think it is a good time to go over the high-level flow of the application. So what does acutally happen?
+Well we first initialize our memory. Then we create the game instance which basically just sets basic
+parameters and assigns function pointers. From there we load the game into the application by creating 
+an application. The application creates all the subsystems, registers for events. Starts the paltform
+and the renderer. From there we simply run the application. What happends when we run it. Well
+
+1. We get some infromation about the clock originally and target frame time etc.
+2. Enter the main loop
+3. Pump the messages from the window and react to them
+4. Get the delta time and start recording how much time the frame needs
+5. Update the game (handles simulation of the game basically)
+6. Render the game (records all the render commands that we need)
+7. Prepare a render packet and draw the current frame
+8. Drawint the current frame means to call begin and end frame on the backend and makes sure none of them fail for some reason.
+9. As said the begin frame sets up everything and recreates the swapchain if needed
+10. End frame actually submits the commands and presents the swapchain
+11. Back in the application we perform math check on how long the frame took
+12. If the frame took less than the target time we give back some power to the OS by sleeping until the tagret frame time.
+13. Finally update the input for the next frame and store the current time in the application.
+14. If at any point we triggered the is_running to false we exit the loop
+
+After we exit the loop the procedure is pretty simple. We need to deregister for all of the events that we have registered for.
+Then we need to shutdown all the subsystems. Shutdown the renderer and platform. Finally just shutdown the memory
+from the entry point and exit normally. So from a very high level this is what the application currently is able to do.
+
+
+
+
 
